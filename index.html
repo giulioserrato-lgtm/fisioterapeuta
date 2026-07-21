@@ -528,12 +528,23 @@
   import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "SUA_API_KEY_AQUI",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJETO",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "SEU_SENDER_ID",
-    appId: "SEU_APP_ID"
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDwR9n2j2edICsr_4Jug8xm-dZs3p9yRL4",
+  authDomain: "ponto-andressa.firebaseapp.com",
+  projectId: "ponto-andressa",
+  storageBucket: "ponto-andressa.firebasestorage.app",
+  messagingSenderId: "450710603926",
+  appId: "1:450710603926:web:16aa56699eb729992c1ab7"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
   };
 
   const HORARIO_PADRAO_ENTRADA = "09:00";
