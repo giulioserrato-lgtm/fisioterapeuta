@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ponto — Fisioterapeuta Andressa</title>
+<meta name="theme-color" content="#9D174D">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icone-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icone-apple-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ponto Andressa">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul-escuro:#9D174D;
+    --azul-medio:#DB2777;
+    --azul-claro:#FCE7F3;
+    --azul-claro-2:#FBCFE8;
+    --branco:#FFFFFF;
+    --texto-escuro:#3B0A24;
+    --texto-claro:#FFFFFF;
+    --alerta:#9F1239;
+    --alerta-bg:#FFE4E9;
+    --sombra: 0 8px 24px rgba(157,23,77,0.18);
+    --raio: 16px;
+  }
+
+  html{
+    font-size: 112.5%; /* base ~18px para melhor leitura */
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: linear-gradient(180deg, var(--azul-claro) 0%, #EFF6FF 40%, #F8FBFF 100%);
+    color: var(--texto-escuro);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom: 3rem;
+    line-height:1.45;
+  }
+
+  a, button, input, select{ font-family:inherit; }
+
+  *:focus-visible{
+    outline: 3px solid #FFB74A;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  header.topo{
+    background: linear-gradient(135deg, var(--azul-escuro), var(--azul-medio));
+    color: var(--texto-claro);
+    padding: 1.4rem 1.1rem 1.6rem;
+    border-radius: 0 0 28px 28px;
+    box-shadow: var(--sombra);
+    position: relative;
+    overflow: hidden;
+  }
+  header.topo::after{
+    content:"";
+    position:absolute;
+    right:-40px; top:-60px;
+    width:180px; height:180px;
+    border-radius:50%;
+    background: rgba(255,255,255,0.08);
+  }
+  .barra-superior{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.6rem;
+    position:relative;
+    z-index:1;
+  }
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    font-size:.72rem;
+    font-weight:700;
+    opacity:.9;
+    margin:0 0 .3rem;
+  }
+  h1.nome{
+    font-family:'Poppins', sans-serif;
+    font-weight:800;
+    font-size: clamp(1.7rem, 7vw, 2.3rem);
+    margin:0;
+    line-height:1.1;
+  }
+
+  .controle-texto{
+    display:flex;
+    gap:.35rem;
+    position:relative;
+    z-index:1;
+  }
+  .controle-texto button{
+    background: rgba(255,255,255,0.16);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    color:#fff;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .controle-texto button:active{ transform: scale(.94); }
+
+  .status-sync{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    font-size:.8rem;
+    font-weight:700;
+    margin-top:.9rem;
+    padding:.35rem .7rem;
+    border-radius:999px;
+    background: rgba(255,255,255,0.16);
+    width:fit-content;
+    position:relative; z-index:1;
+  }
+  .status-sync.ok::before{ content:""; width:8px;height:8px;border-radius:50%; background:#8CF0AE; display:inline-block; }
+  .status-sync.erro::before{ content:""; width:8px;height:8px;border-radius:50%; background:#FFB081; display:inline-block; }
+
+  .seletor-paciente{
+    display:flex;
+    gap:.5rem;
+    margin-top: 1.1rem;
+    position:relative; z-index:1;
+  }
+  .btn-paciente{
+    flex:1;
+    background: rgba(255,255,255,0.14);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    color:#fff;
+    font-weight:800;
+    font-size: 1rem;
+    padding: .75rem .6rem;
+    border-radius: 12px;
+    cursor:pointer;
+    min-height: 2.9rem;
+    transition: background .2s, color .2s, box-shadow .2s;
+  }
+  .btn-paciente.ativo{
+    background:#fff;
+    color: var(--azul-escuro);
+    box-shadow: var(--sombra);
+  }
+  .btn-paciente:active{ transform: scale(.97); }
+
+  .navegador-mes{
+    margin-top: 1.1rem;
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    position:relative; z-index:1;
+  }
+  .navegador-mes button{
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.55);
+    color:#fff;
+    width: 2.8rem;
+    height: 2.8rem;
+    min-width:2.8rem;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    font-weight:800;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .navegador-mes button:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+  }
+  .navegador-mes select{
+    flex:1;
+    background: #fff;
+    color: var(--texto-escuro);
+    border: none;
+    border-radius: 12px;
+    font-weight:800;
+    font-size: 1.05rem;
+    padding: .65rem .7rem;
+    text-align:center;
+    text-align-last:center;
+    box-shadow: var(--sombra);
+  }
+
+  main{
+    max-width: 45rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .aviso-mes-passado{
+    background:#FFF4E6;
+    border:1.5px solid #F0C089;
+    color:#6B4200;
+    font-weight:700;
+    font-size:.92rem;
+    border-radius:12px;
+    padding:.7rem .9rem;
+    margin-top:1.1rem;
+    text-align:center;
+  }
+
+  .cartao-hoje{
+    background: var(--branco);
+    border: 2.5px solid var(--azul-medio);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra);
+    margin-top: 1.1rem;
+    padding: 1rem 1.2rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: .7rem;
+    flex-wrap: wrap;
+  }
+  .cartao-hoje .rotulo{
+    font-size:.72rem;
+    font-weight:800;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color: var(--azul-medio);
+    margin:0 0 .25rem;
+  }
+  .cartao-hoje .data-grande{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size: 1.2rem;
+    margin:0;
+    color: var(--texto-escuro);
+  }
+  .pulso{
+    width:.8rem;height:.8rem;border-radius:50%;
+    background: var(--azul-medio);
+    box-shadow: 0 0 0 0 rgba(21,80,196,.6);
+    animation: pulsar 2s infinite;
+    flex-shrink:0;
+  }
+  @keyframes pulsar{
+    0%{box-shadow:0 0 0 0 rgba(21,80,196,.55);}
+    70%{box-shadow:0 0 0 14px rgba(21,80,196,0);}
+    100%{box-shadow:0 0 0 0 rgba(21,80,196,0);}
+  }
+
+  .secao-titulo{
+    margin: 1.7rem .25rem .8rem;
+    font-family:'Poppins',sans-serif;
+    font-weight:800;
+    font-size: 1rem;
+    color: var(--azul-escuro);
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+
+  .lista-dias{
+    display:flex;
+    flex-direction:column;
+    gap: .85rem;
+  }
+
+  .linha-dia{
+    background: var(--branco);
+    border-radius: 16px;
+    border: 1.5px solid var(--azul-claro-2);
+    padding: 1rem 1.1rem;
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: .75rem;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .linha-dia.hoje{
+    border-color: var(--azul-medio);
+    box-shadow: 0 0 0 4px rgba(21,80,196,0.15);
+    background: linear-gradient(180deg,#FFFFFF, #F3F8FF);
+  }
+  .linha-dia.falta{
+    background: var(--alerta-bg);
+    border-color: #E0A868;
+  }
+
+  .linha-cabeca{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.6rem;
+    flex-wrap:wrap;
+  }
+  .dia-semana{
+    font-weight:800;
+    font-size: 1.08rem;
+    color: var(--texto-escuro);
+  }
+  .dia-numero{
+    font-size: .95rem;
+    color:#3D4C6B;
+    font-weight:600;
+  }
+  .tag-hoje{
+    background: var(--azul-medio);
+    color:#fff;
+    font-size:.7rem;
+    font-weight:800;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding: .25rem .55rem;
+    border-radius:999px;
+  }
+
+  .campos{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .7rem;
+  }
+  .campo label{
+    display:block;
+    font-size: .78rem;
+    font-weight:700;
+    color:#3D4C6B;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:.3rem;
+  }
+  .campo input[type="time"]{
+    width:100%;
+    padding: .7rem .6rem;
+    border-radius:10px;
+    border:2px solid var(--azul-claro-2);
+    font-size: 1.15rem;
+    font-weight:600;
+    font-family:'Inter',sans-serif;
+    color: var(--texto-escuro);
+    background:#FBFDFF;
+    min-height: 3rem;
+  }
+  .campo input[type="time"]:disabled{
+    opacity:.55;
+    background:#EDEDED;
+  }
+  .campo input[type="time"]:focus{
+    outline:none;
+    border-color: var(--azul-medio);
+    box-shadow: 0 0 0 4px rgba(21,80,196,.2);
+  }
+
+  .rodape-linha{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.7rem;
+    flex-wrap:wrap;
+  }
+  .falta-toggle{
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    font-size: .98rem;
+    font-weight:700;
+    color: var(--alerta);
+    cursor:pointer;
+    user-select:none;
+    min-height: 2.75rem;
+  }
+  .falta-toggle input{
+    width: 1.6rem;
+    height: 1.6rem;
+    accent-color: var(--alerta);
+    cursor:pointer;
+  }
+  .horas-dia{
+    font-size: .95rem;
+    font-weight:800;
+    color: var(--azul-escuro);
+    background: var(--azul-claro);
+    padding: .4rem .8rem;
+    border-radius: 999px;
+  }
+  .horas-dia.vazio{
+    color:#5C6B8A;
+    background:#EEF2F8;
+  }
+
+  .resumo{
+    margin-top: 1.7rem;
+    background: linear-gradient(135deg, var(--azul-escuro), var(--azul-medio));
+    color: var(--texto-claro);
+    border-radius: 18px;
+    padding: 1.2rem;
+    box-shadow: var(--sombra);
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: .7rem;
+    text-align:center;
+  }
+  .resumo .item .valor{
+    font-family:'Poppins',sans-serif;
+    font-weight:800;
+    font-size: 1.4rem;
+    display:block;
+  }
+  .resumo .item .rotulo{
+    font-size: .74rem;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    opacity:.9;
+  }
+
+  .acoes{
+    display:flex;
+    justify-content:center;
+    margin-top: 1.1rem;
+  }
+  .btn-limpar{
+    background:#fff;
+    border: 2px solid #C7D6ED;
+    color:#3D4C6B;
+    font-size: .95rem;
+    font-weight:700;
+    padding: .7rem 1.2rem;
+    border-radius:999px;
+    cursor:pointer;
+    min-height: 2.9rem;
+  }
+  .btn-limpar:active{ transform: scale(.97); }
+
+  footer.rodape-app{
+    text-align:center;
+    font-size: .82rem;
+    color:#4C5B7A;
+    margin-top: 1.7rem;
+    padding: 0 1.2rem;
+    line-height:1.5;
+  }
+
+  @media (min-width: 34rem){
+    .linha-dia{
+      grid-template-columns: 1.1fr 1.4fr auto;
+      align-items:center;
+    }
+    .linha-cabeca{ flex-direction:column; align-items:flex-start; gap:.2rem; }
+    .campos{ grid-template-columns: 1fr 1fr; }
+    .rodape-linha{ flex-direction:column; align-items:flex-end; gap:.5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .pulso{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="barra-superior">
+    <div>
+      <p class="eyebrow">Registro de atendimento</p>
+      <h1 class="nome">Fisioterapeuta Andressa</h1>
+    </div>
+    <div class="controle-texto" role="group" aria-label="Tamanho do texto">
+      <button type="button" id="btnDiminuirTexto" aria-label="Diminuir tamanho do texto">A−</button>
+      <button type="button" id="btnAumentarTexto" aria-label="Aumentar tamanho do texto">A+</button>
+    </div>
+  </div>
+
+  <div class="seletor-paciente" role="group" aria-label="Escolher paciente">
+    <button type="button" class="btn-paciente" id="btnPacienteJose" data-paciente="jose">José</button>
+    <button type="button" class="btn-paciente" id="btnPacienteCirene" data-paciente="cirene">Cirene</button>
+  </div>
+
+  <div class="navegador-mes">
+    <button type="button" id="btnMesAnterior" aria-label="Mês anterior">‹</button>
+    <select id="seletorMes" aria-label="Escolher mês"></select>
+    <button type="button" id="btnMesSeguinte" aria-label="Mês seguinte">›</button>
+  </div>
+
+  <p class="status-sync" id="statusSync">Conectando…</p>
+</header>
+
+<main>
+  <div id="avisoMesPassado" class="aviso-mes-passado" hidden></div>
+
+  <div class="cartao-hoje" id="cartaoHoje" hidden>
+    <div>
+      <p class="rotulo">Hoje</p>
+      <p class="data-grande" id="dataHojeTexto">—</p>
+    </div>
+    <span class="pulso" aria-hidden="true"></span>
+  </div>
+
+  <p class="secao-titulo">Atendimentos do mês (terças e quintas)</p>
+  <div class="lista-dias" id="listaDias"></div>
+
+  <div class="resumo">
+    <div class="item">
+      <span class="valor" id="totalDias">0</span>
+      <span class="rotulo">Sessões realizadas</span>
+    </div>
+    <div class="item">
+      <span class="valor" id="totalFaltas">0</span>
+      <span class="rotulo">Faltas</span>
+    </div>
+    <div class="item">
+      <span class="valor" id="totalHoras">0h</span>
+      <span class="rotulo">Horas no mês</span>
+    </div>
+  </div>
+
+  <div class="acoes">
+    <button class="btn-limpar" id="btnLimpar">Limpar mês selecionado deste paciente</button>
+  </div>
+</main>
+
+<footer class="rodape-app">
+  Copyright MD2026
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY_AQUI",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+  };
+
+  const HORARIO_PADRAO_ENTRADA = "09:00";
+  const HORARIO_PADRAO_SAIDA = "10:00";
+
+  // Código exigido para apagar os registros de um mês.
+  // Troque "1234" por um código só seu antes de publicar o site.
+  const CODIGO_PARA_LIMPAR = "1234";
+
+  const NOMES_PACIENTES = { jose: 'José', cirene: 'Cirene' };
+
+  // ---------- Paciente selecionado (José ou Cirene) ----------
+  let pacienteAtual = 'jose';
+  try{
+    const pacienteSalvo = localStorage.getItem('andressa-paciente-atual');
+    if(pacienteSalvo === 'jose' || pacienteSalvo === 'cirene') pacienteAtual = pacienteSalvo;
+  }catch(e){ /* ignora */ }
+
+  const btnPacienteJose = document.getElementById('btnPacienteJose');
+  const btnPacienteCirene = document.getElementById('btnPacienteCirene');
+
+  function atualizarBotoesPaciente(){
+    btnPacienteJose.classList.toggle('ativo', pacienteAtual === 'jose');
+    btnPacienteCirene.classList.toggle('ativo', pacienteAtual === 'cirene');
+  }
+  atualizarBotoesPaciente();
+
+  function selecionarPaciente(paciente){
+    if(paciente === pacienteAtual) return;
+    pacienteAtual = paciente;
+    try{ localStorage.setItem('andressa-paciente-atual', pacienteAtual); }catch(e){}
+    atualizarBotoesPaciente();
+    trocarMes();
+  }
+
+  btnPacienteJose.addEventListener('click', () => selecionarPaciente('jose'));
+  btnPacienteCirene.addEventListener('click', () => selecionarPaciente('cirene'));
+
+  const DIAS_SEMANA = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+  const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+  const hoje = new Date();
+  const anoAtual = hoje.getFullYear();
+  const mesAtual = hoje.getMonth(); // 0-11
+  const hojeISO = formatarISO(hoje);
+
+  function formatarISO(d){
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  // ---------- Controle de tamanho de texto (acessibilidade) ----------
+  const NIVEIS_TEXTO = [100, 112.5, 125, 137.5, 150];
+  let indiceTexto = 1;
+  try{
+    const salvo = localStorage.getItem('ponto-tamanho-texto');
+    if(salvo !== null) indiceTexto = Math.min(Math.max(parseInt(salvo,10) || 1, 0), NIVEIS_TEXTO.length-1);
+  }catch(e){ /* ignora */ }
+
+  function aplicarTamanhoTexto(){
+    document.documentElement.style.fontSize = NIVEIS_TEXTO[indiceTexto] + '%';
+    try{ localStorage.setItem('ponto-tamanho-texto', String(indiceTexto)); }catch(e){}
+  }
+  aplicarTamanhoTexto();
+
+  document.getElementById('btnAumentarTexto').addEventListener('click', () => {
+    indiceTexto = Math.min(indiceTexto+1, NIVEIS_TEXTO.length-1);
+    aplicarTamanhoTexto();
+  });
+  document.getElementById('btnDiminuirTexto').addEventListener('click', () => {
+    indiceTexto = Math.max(indiceTexto-1, 0);
+    aplicarTamanhoTexto();
+  });
+
+  // ---------- Lista de meses disponíveis: janeiro de 2026 até o mês atual ----------
+  const listaMeses = [];
+  {
+    let a = 2026, m = 0; // janeiro de 2026
+    while(a < anoAtual || (a === anoAtual && m <= mesAtual)){
+      listaMeses.push({ano:a, mes:m});
+      m++;
+      if(m > 11){ m = 0; a++; }
+    }
+  }
+  let indiceMesSelecionado = listaMeses.length - 1; // mês atual por padrão
+
+  const seletorMes = document.getElementById('seletorMes');
+  listaMeses.forEach((item, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${MESES[item.mes].charAt(0).toUpperCase()+MESES[item.mes].slice(1)} de ${item.ano}`;
+    seletorMes.appendChild(opt);
+  });
+  seletorMes.value = indiceMesSelecionado;
+
+  const btnMesAnterior = document.getElementById('btnMesAnterior');
+  const btnMesSeguinte = document.getElementById('btnMesSeguinte');
+
+  function atualizarBotoesMes(){
+    btnMesAnterior.disabled = indiceMesSelecionado <= 0;
+    btnMesSeguinte.disabled = indiceMesSelecionado >= listaMeses.length - 1;
+  }
+  atualizarBotoesMes();
+
+  btnMesAnterior.addEventListener('click', () => {
+    if(indiceMesSelecionado > 0){
+      indiceMesSelecionado--;
+      seletorMes.value = indiceMesSelecionado;
+      trocarMes();
+    }
+  });
+  btnMesSeguinte.addEventListener('click', () => {
+    if(indiceMesSelecionado < listaMeses.length - 1){
+      indiceMesSelecionado++;
+      seletorMes.value = indiceMesSelecionado;
+      trocarMes();
+    }
+  });
+  seletorMes.addEventListener('change', () => {
+    indiceMesSelecionado = parseInt(seletorMes.value, 10);
+    trocarMes();
+  });
+
+  // ---------- Firebase ----------
+  const statusEl = document.getElementById('statusSync');
+  let db, docRefAtual, cancelarInscricao = null;
+  let dados = {};
+  let pronto = false;
+  let diasUteis = [];
+
+  const configuracaoPendente = firebaseConfig.apiKey === "SUA_API_KEY_AQUI";
+  let app, firestoreOk = false;
+
+  if(configuracaoPendente){
+    statusEl.textContent = 'Firebase ainda não configurado — veja o README';
+    statusEl.classList.add('erro');
+  } else {
+    try{
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      firestoreOk = true;
+    }catch(e){
+      console.error('Erro ao iniciar Firebase:', e);
+      statusEl.textContent = 'Erro ao configurar o Firebase';
+      statusEl.classList.add('erro');
+    }
+  }
+
+  function idDocumentoPara(ano, mes){
+    return `andressa-${pacienteAtual}-${ano}-${String(mes+1).padStart(2,'0')}`;
+  }
+
+  function gerarDiasUteis(ano, mes){
+    const lista = [];
+    const totalDiasNoMes = new Date(ano, mes+1, 0).getDate();
+    for(let dia=1; dia<=totalDiasNoMes; dia++){
+      const d = new Date(ano, mes, dia);
+      const diaSemana = d.getDay();
+      // Atendimentos apenas às terças (2) e quintas (4)
+      if(diaSemana === 2 || diaSemana === 4) lista.push(d);
+    }
+    return lista;
+  }
+
+  function trocarMes(){
+    const {ano, mes} = listaMeses[indiceMesSelecionado];
+    diasUteis = gerarDiasUteis(ano, mes);
+    atualizarBotoesMes();
+
+    const ehMesAtual = (ano === anoAtual && mes === mesAtual);
+    const hojeEhDiaDeAtendimento = (hoje.getDay() === 2 || hoje.getDay() === 4);
+    document.getElementById('cartaoHoje').hidden = !(ehMesAtual && hojeEhDiaDeAtendimento);
+    const avisoEl = document.getElementById('avisoMesPassado');
+    if(ehMesAtual){
+      avisoEl.hidden = true;
+    } else {
+      avisoEl.hidden = false;
+      avisoEl.textContent = `Você está vendo ${MESES[mes]} de ${ano}. Os registros deste mês continuam podendo ser editados.`;
+    }
+
+    if(cancelarInscricao){ cancelarInscricao(); cancelarInscricao = null; }
+    dados = {};
+    pronto = false;
+    renderizar();
+
+    if(!firestoreOk) return;
+
+    docRefAtual = doc(db, 'pontos', idDocumentoPara(ano, mes));
+    cancelarInscricao = onSnapshot(docRefAtual, (snap) => {
+      dados = (snap.exists() && snap.data().dias) ? snap.data().dias : {};
+      pronto = true;
+      statusEl.textContent = 'Sincronizado — todos veem o mesmo registro';
+      statusEl.classList.remove('erro');
+      statusEl.classList.add('ok');
+      renderizar();
+      rolarParaHojeSeNecessario();
+    }, (erro) => {
+      console.error('Erro de sincronização:', erro);
+      statusEl.textContent = 'Sem conexão com o banco de dados';
+      statusEl.classList.remove('ok');
+      statusEl.classList.add('erro');
+    });
+  }
+
+  async function salvarDia(iso, registro){
+    if(!firestoreOk || !docRefAtual) return;
+    try{
+      await setDoc(docRefAtual, { dias: { [iso]: registro } }, { merge: true });
+    }catch(e){
+      console.error('Erro ao salvar:', e);
+      statusEl.textContent = 'Não foi possível salvar agora — tente de novo';
+      statusEl.classList.remove('ok');
+      statusEl.classList.add('erro');
+    }
+  }
+
+  document.getElementById('dataHojeTexto').textContent =
+    `${DIAS_SEMANA[hoje.getDay()].charAt(0).toUpperCase()+DIAS_SEMANA[hoje.getDay()].slice(1)}, ${hoje.getDate()} de ${MESES[mesAtual]}`;
+
+  function calcularHoras(entrada, saida){
+    if(!entrada || !saida) return null;
+    const [he, me] = entrada.split(':').map(Number);
+    const [hs, ms] = saida.split(':').map(Number);
+    let minutos = (hs*60+ms) - (he*60+me);
+    if(minutos <= 0) return null;
+    const horas = Math.floor(minutos/60);
+    const restoMin = minutos % 60;
+    return {texto: `${horas}h${restoMin ? String(restoMin).padStart(2,'0') : ''}`, minutos};
+  }
+
+  const listaEl = document.getElementById('listaDias');
+
+  function renderizar(){
+    listaEl.innerHTML = '';
+    let minutosTotais = 0;
+    let diasTrabalhados = 0;
+    let totalFaltas = 0;
+
+    diasUteis.forEach(d => {
+      const iso = formatarISO(d);
+      const salvo = dados[iso];
+      const registro = salvo || {
+        entrada: HORARIO_PADRAO_ENTRADA,
+        saida: HORARIO_PADRAO_SAIDA,
+        falta: false
+      };
+      const ehHoje = iso === hojeISO;
+
+      const linha = document.createElement('div');
+      linha.className = 'linha-dia' + (ehHoje ? ' hoje' : '') + (registro.falta ? ' falta' : '');
+      linha.id = ehHoje ? 'linhaHoje' : '';
+
+      const cabeca = document.createElement('div');
+      cabeca.className = 'linha-cabeca';
+      cabeca.innerHTML = `
+        <span class="dia-semana">${DIAS_SEMANA[d.getDay()].charAt(0).toUpperCase()+DIAS_SEMANA[d.getDay()].slice(1)}</span>
+        <span class="dia-numero">${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}</span>
+        ${ehHoje ? '<span class="tag-hoje">Hoje</span>' : ''}
+      `;
+
+      const campos = document.createElement('div');
+      campos.className = 'campos';
+
+      const campoEntrada = document.createElement('div');
+      campoEntrada.className = 'campo';
+      const rotuloEntrada = document.createElement('label');
+      rotuloEntrada.textContent = 'Entrada';
+      const inputEntrada = document.createElement('input');
+      inputEntrada.type = 'time';
+      inputEntrada.value = registro.entrada || HORARIO_PADRAO_ENTRADA;
+      inputEntrada.disabled = registro.falta;
+      inputEntrada.setAttribute('aria-label', `Horário de entrada do dia ${d.getDate()}`);
+      inputEntrada.addEventListener('change', () => {
+        atualizarRegistro(iso, {entrada: inputEntrada.value});
+      });
+      campoEntrada.appendChild(rotuloEntrada);
+      campoEntrada.appendChild(inputEntrada);
+
+      const campoSaida = document.createElement('div');
+      campoSaida.className = 'campo';
+      const rotuloSaida = document.createElement('label');
+      rotuloSaida.textContent = 'Saída';
+      const inputSaida = document.createElement('input');
+      inputSaida.type = 'time';
+      inputSaida.value = registro.saida || HORARIO_PADRAO_SAIDA;
+      inputSaida.disabled = registro.falta;
+      inputSaida.setAttribute('aria-label', `Horário de saída do dia ${d.getDate()}`);
+      inputSaida.addEventListener('change', () => {
+        atualizarRegistro(iso, {saida: inputSaida.value});
+      });
+      campoSaida.appendChild(rotuloSaida);
+      campoSaida.appendChild(inputSaida);
+
+      campos.appendChild(campoEntrada);
+      campos.appendChild(campoSaida);
+
+      const rodapeLinha = document.createElement('div');
+      rodapeLinha.className = 'rodape-linha';
+
+      const faltaLabel = document.createElement('label');
+      faltaLabel.className = 'falta-toggle';
+      const faltaCheckbox = document.createElement('input');
+      faltaCheckbox.type = 'checkbox';
+      faltaCheckbox.checked = !!registro.falta;
+      faltaCheckbox.setAttribute('aria-label', `Marcar falta no dia ${d.getDate()}`);
+      faltaCheckbox.addEventListener('change', () => {
+        atualizarRegistro(iso, {falta: faltaCheckbox.checked});
+      });
+      faltaLabel.appendChild(faltaCheckbox);
+      faltaLabel.appendChild(document.createTextNode('Falta'));
+
+      const horasCalculadas = registro.falta ? null : calcularHoras(registro.entrada, registro.saida);
+      const horasSpan = document.createElement('span');
+      horasSpan.className = 'horas-dia' + (horasCalculadas ? '' : ' vazio');
+      horasSpan.textContent = registro.falta ? 'Falta' : (horasCalculadas ? horasCalculadas.texto : '—');
+
+      rodapeLinha.appendChild(faltaLabel);
+      rodapeLinha.appendChild(horasSpan);
+
+      linha.appendChild(cabeca);
+      linha.appendChild(campos);
+      linha.appendChild(rodapeLinha);
+      listaEl.appendChild(linha);
+
+      if(registro.falta){
+        totalFaltas++;
+      } else if(horasCalculadas){
+        diasTrabalhados++;
+        minutosTotais += horasCalculadas.minutos;
+      }
+    });
+
+    document.getElementById('totalDias').textContent = diasTrabalhados;
+    document.getElementById('totalFaltas').textContent = totalFaltas;
+    const hTot = Math.floor(minutosTotais/60);
+    const mTot = minutosTotais % 60;
+    document.getElementById('totalHoras').textContent = `${hTot}h${mTot ? String(mTot).padStart(2,'0') : ''}`;
+  }
+
+  function atualizarRegistro(iso, mudanca){
+    const atual = dados[iso] || {
+      entrada: HORARIO_PADRAO_ENTRADA,
+      saida: HORARIO_PADRAO_SAIDA,
+      falta: false
+    };
+    const novo = {...atual, ...mudanca};
+    dados[iso] = novo; // atualização imediata na tela
+    renderizar();
+    salvarDia(iso, novo); // grava no Firestore; onSnapshot confirma para todos
+  }
+
+  document.getElementById('btnLimpar').addEventListener('click', async () => {
+    const {ano, mes} = listaMeses[indiceMesSelecionado];
+    const nomePaciente = NOMES_PACIENTES[pacienteAtual];
+    const codigoDigitado = prompt(`Para apagar os registros de ${nomePaciente} em ${MESES[mes]} de ${ano}, digite o código de confirmação:`);
+    if(codigoDigitado === null) return; // cancelou
+    if(codigoDigitado !== CODIGO_PARA_LIMPAR){
+      alert('Código incorreto. Os registros não foram apagados.');
+      return;
+    }
+    if(!confirm(`Tem certeza que deseja apagar todos os registros de ${nomePaciente} em ${MESES[mes]} de ${ano}? Isso vale para todos que acessam esta página.`)) return;
+    const vazio = {};
+    diasUteis.forEach(d => vazio[formatarISO(d)] = {
+      entrada: HORARIO_PADRAO_ENTRADA,
+      saida: HORARIO_PADRAO_SAIDA,
+      falta: false
+    });
+    dados = vazio;
+    renderizar();
+    if(firestoreOk && docRefAtual){
+      try{
+        await setDoc(docRefAtual, { dias: vazio }, { merge: false });
+      }catch(e){
+        console.error('Erro ao limpar:', e);
+      }
+    }
+  });
+
+  let jaRolouNesteMes = false;
+  function rolarParaHojeSeNecessario(){
+    const {ano, mes} = listaMeses[indiceMesSelecionado];
+    if(!(ano === anoAtual && mes === mesAtual)) return;
+    if(jaRolouNesteMes) return;
+    const alvo = document.getElementById('linhaHoje');
+    if(alvo){
+      setTimeout(() => alvo.scrollIntoView({behavior:'smooth', block:'center'}), 200);
+      jaRolouNesteMes = true;
+    }
+  }
+
+  trocarMes();
+</script>
+
+</body>
+</html>
