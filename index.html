@@ -524,27 +524,18 @@
 </footer>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  // Os módulos do Firebase são carregados de forma assíncrona mais abaixo,
+  // para que a página (lista de terças/quintas, seletor de paciente, etc.)
+  // sempre apareça normalmente, mesmo que o carregamento do Firebase demore
+  // ou falhe por qualquer motivo de rede.
 
   const firebaseConfig = {
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDwR9n2j2edICsr_4Jug8xm-dZs3p9yRL4",
-  authDomain: "ponto-andressa.firebaseapp.com",
-  projectId: "ponto-andressa",
-  storageBucket: "ponto-andressa.firebasestorage.app",
-  messagingSenderId: "450710603926",
-  appId: "1:450710603926:web:16aa56699eb729992c1ab7"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+    apiKey: "SUA_API_KEY_AQUI",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
   };
 
   const HORARIO_PADRAO_ENTRADA = "09:00";
@@ -675,19 +666,31 @@ const app = initializeApp(firebaseConfig);
   let diasUteis = [];
 
   const configuracaoPendente = firebaseConfig.apiKey === "SUA_API_KEY_AQUI";
-  let app, firestoreOk = false;
+  let firestoreOk = false;
+  let fnDoc, fnSetDoc, fnOnSnapshot;
 
-  if(configuracaoPendente){
-    statusEl.textContent = 'Firebase ainda não configurado — veja o README';
-    statusEl.classList.add('erro');
-  } else {
+  async function iniciarFirebase(){
+    if(configuracaoPendente){
+      statusEl.textContent = 'Firebase ainda não configurado — veja o README';
+      statusEl.classList.add('erro');
+      return;
+    }
     try{
-      app = initializeApp(firebaseConfig);
+      const [{ initializeApp }, { getFirestore, doc, setDoc, onSnapshot }] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+      ]);
+      fnDoc = doc;
+      fnSetDoc = setDoc;
+      fnOnSnapshot = onSnapshot;
+      const app = initializeApp(firebaseConfig);
       db = getFirestore(app);
       firestoreOk = true;
+      // Agora que o Firebase está pronto, conecta o mês/paciente atual à nuvem
+      conectarFirestoreMesAtual();
     }catch(e){
       console.error('Erro ao iniciar Firebase:', e);
-      statusEl.textContent = 'Erro ao configurar o Firebase';
+      statusEl.textContent = 'Sem conexão com o Firebase — verifique a internet';
       statusEl.classList.add('erro');
     }
   }
@@ -706,6 +709,27 @@ const app = initializeApp(firebaseConfig);
       if(diaSemana === 2 || diaSemana === 4) lista.push(d);
     }
     return lista;
+  }
+
+  function conectarFirestoreMesAtual(){
+    if(!firestoreOk) return;
+    const {ano, mes} = listaMeses[indiceMesSelecionado];
+    if(cancelarInscricao){ cancelarInscricao(); cancelarInscricao = null; }
+    docRefAtual = fnDoc(db, 'pontos', idDocumentoPara(ano, mes));
+    cancelarInscricao = fnOnSnapshot(docRefAtual, (snap) => {
+      dados = (snap.exists() && snap.data().dias) ? snap.data().dias : {};
+      pronto = true;
+      statusEl.textContent = 'Sincronizado — todos veem o mesmo registro';
+      statusEl.classList.remove('erro');
+      statusEl.classList.add('ok');
+      renderizar();
+      rolarParaHojeSeNecessario();
+    }, (erro) => {
+      console.error('Erro de sincronização:', erro);
+      statusEl.textContent = 'Sem conexão com o banco de dados';
+      statusEl.classList.remove('ok');
+      statusEl.classList.add('erro');
+    });
   }
 
   function trocarMes(){
@@ -729,29 +753,13 @@ const app = initializeApp(firebaseConfig);
     pronto = false;
     renderizar();
 
-    if(!firestoreOk) return;
-
-    docRefAtual = doc(db, 'pontos', idDocumentoPara(ano, mes));
-    cancelarInscricao = onSnapshot(docRefAtual, (snap) => {
-      dados = (snap.exists() && snap.data().dias) ? snap.data().dias : {};
-      pronto = true;
-      statusEl.textContent = 'Sincronizado — todos veem o mesmo registro';
-      statusEl.classList.remove('erro');
-      statusEl.classList.add('ok');
-      renderizar();
-      rolarParaHojeSeNecessario();
-    }, (erro) => {
-      console.error('Erro de sincronização:', erro);
-      statusEl.textContent = 'Sem conexão com o banco de dados';
-      statusEl.classList.remove('ok');
-      statusEl.classList.add('erro');
-    });
+    conectarFirestoreMesAtual();
   }
 
   async function salvarDia(iso, registro){
     if(!firestoreOk || !docRefAtual) return;
     try{
-      await setDoc(docRefAtual, { dias: { [iso]: registro } }, { merge: true });
+      await fnSetDoc(docRefAtual, { dias: { [iso]: registro } }, { merge: true });
     }catch(e){
       console.error('Erro ao salvar:', e);
       statusEl.textContent = 'Não foi possível salvar agora — tente de novo';
@@ -934,7 +942,10 @@ const app = initializeApp(firebaseConfig);
     }
   }
 
+  // Renderiza a lista de dias (terças/quintas) imediatamente, sem depender do Firebase,
+  // e em paralelo tenta conectar ao banco de dados na nuvem.
   trocarMes();
+  iniciarFirebase();
 </script>
 
 </body>
